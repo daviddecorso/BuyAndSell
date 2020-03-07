@@ -49,7 +49,7 @@ public final class BuyAndSell extends JavaPlugin {
 
         String itemFromPriceFile, tempString;
         if (!setupEconomy() ) {
-            log.severe(String.format("[%s] - Disabled due to no Vault dependency found!", getDescription().getName()));
+            log.severe(String.format("§4Error: [%s] - Disabled due to no Vault dependency found!", getDescription().getName()));
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
@@ -70,13 +70,13 @@ public final class BuyAndSell extends JavaPlugin {
         try {
             s = new Scanner(pricesList);
         } catch (FileNotFoundException e) {
-            System.out.println("Couldn't find prices.txt");
+            System.out.println("§4Error: Couldn't find prices.txt");
             e.printStackTrace();
         }
 
         if (s == null)
         {
-            System.out.println("Error: unable to find file for price list. File must be named prices.txt.");
+            System.out.println("§4Error: unable to find file for price list. File must be named prices.txt.");
         }
         else
         {
@@ -120,7 +120,7 @@ public final class BuyAndSell extends JavaPlugin {
                     break;
                 }
             }
-            System.out.println("Loaded prices.");
+            System.out.println("§a[BuyAndSell] Loaded prices.");
             s.close();
             pricesList = null;
         }
@@ -143,7 +143,7 @@ public final class BuyAndSell extends JavaPlugin {
 
         if (pw == null)
         {
-            System.out.println("Couldn't write prices to file!");
+            System.out.println("§4Error: Couldn't write prices to file!");
             return;
         }
 
@@ -199,28 +199,28 @@ public final class BuyAndSell extends JavaPlugin {
                 }
                 else if (args[0].length() > 100)
                 {
-                    player.sendMessage("Error: Invalid item.");
+                    player.sendMessage("§4Error: Invalid item.");
                     return false;
                 }
                 else if (args[1].length() > 8)
                 {
-                    player.sendMessage("Error: You are trying to buy too many items.");
+                    player.sendMessage("§4Error: You are trying to buy too many items.");
                     return false;
                 }
                 else if (playerBuyMaterial == null)
                 {
-                    player.sendMessage("Error: \""+ args[0] + "\"" + " is not a valid item.");
+                    player.sendMessage("§4Error: \""+ args[0] + "\"" + " is not a valid item.");
                     return false;
                 }
                 else if(!playerBuyMaterial.isItem())
                 {
-                    player.sendMessage("Error: You cannot purchase " + "\""+ args[0] + "\"" + ".");
+                    player.sendMessage("§4You cannot purchase " + "\""+ args[0] + "\"" + ".");
                     return false;
                 }
                 else if (itemPrices.isEmpty())
                 {
-                    System.out.println("Error: Price list is empty!");
-                    player.sendMessage("Error: This plugin has been configured incorrectly. Please contact a server administrator.");
+                    System.out.println("§4Error: Price list is empty!");
+                    player.sendMessage("§4Error: This plugin has been configured incorrectly. Please contact a server administrator.");
                     return false;
                 }
 
@@ -228,7 +228,7 @@ public final class BuyAndSell extends JavaPlugin {
                 {
                     if (Double.parseDouble(args[1]) > 2304)
                     {
-                        player.sendMessage("Error: You are trying to buy too many items.");
+                        player.sendMessage("§4You are trying to buy too many items.");
                         return false;
                     }
                 }
@@ -245,8 +245,7 @@ public final class BuyAndSell extends JavaPlugin {
                 }
                 else
                 {
-                    System.out.println("Error: Item has no price.");
-                    player.sendMessage("Error: You cannot buy this item.");
+                    player.sendMessage("§4You cannot buy this item.");
                     return false;
                 }
 
@@ -257,16 +256,16 @@ public final class BuyAndSell extends JavaPlugin {
                     ItemStack items = new ItemStack(playerBuyMaterial, quantity);
                     player.getInventory().addItem(items);
                     econ.withdrawPlayer(offlinePlayer, itemPrice * quantity);
-                    player.sendMessage("You just bought " + args[1] + " " + args[0] + " for $" + (itemPrice * quantity) + ".");
+                    player.sendMessage("§aYou just bought " + args[1] + " " + args[0] + " for $" + (itemPrice * quantity) + ".");
                 }
                 else
                 {
-                    player.sendMessage("Error: You do not have enough money to purchase this.");
+                    player.sendMessage("§4You do not have enough money to make this purchase.");
                 }
             }
             else
             {
-                System.out.println("Error: A player must run this command.");
+                System.out.println("§4Error: A player must run this command.");
             }
 
             return true;
@@ -279,7 +278,7 @@ public final class BuyAndSell extends JavaPlugin {
             OfflinePlayer offlinePlayer = (OfflinePlayer) sender;
             String materialString;
             double itemPrice;
-            int quantity = 0;
+            int quantity = 0, totalQuantity = 0, totalSum = 0;
             Pair pairPrice;
             ItemStack items, tempStack;
 
@@ -288,30 +287,60 @@ public final class BuyAndSell extends JavaPlugin {
                 items = player.getInventory().getItemInMainHand();
                 playerBuyMaterial = items.getType();
                 materialString = playerBuyMaterial.toString().toLowerCase();
+
                 if (args[0].equals("all"))
                 {
-                    HashMap itemMap = player.getInventory().all(playerBuyMaterial);
-                    Collection itemCollection = itemMap.values();
-                    Object[] itemArray = itemCollection.toArray();
-                    for (int i = 0; i < itemCollection.size(); i++)
+                    Object[] itemArray = player.getInventory().getContents();
+                    for (int i = 0; i < itemArray.length; i++)
                     {
                         tempStack = (ItemStack) itemArray[i];
-                        quantity += tempStack.getAmount();
+                        if (tempStack == null)
+                        {
+                            continue;
+                        }
+                        playerBuyMaterial = tempStack.getType();
+                        materialString = playerBuyMaterial.toString().toLowerCase();
+                        if (itemPrices.containsKey(materialString))
+                        {
+                            quantity = tempStack.getAmount();
+                            totalQuantity += quantity;
+                            pairPrice = (Pair) itemPrices.get(materialString);
+                            itemPrice = (double) pairPrice.getSellPrice();
+
+                            player.getInventory().removeItem(tempStack);
+                            econ.depositPlayer(offlinePlayer, itemPrice * quantity);
+                            totalSum += (itemPrice * quantity);
+                        }
                     }
+                    player.sendMessage("§aYou just sold " + totalQuantity + " item(s) for $" + totalSum + ".");
+                    return true;
                 }
                 else
                 {
+                    if (!isNumeric(args[0]))
+                    {
+                        return false;
+                    }
                     quantity = Integer.parseInt(args[0]);
                 }
                 items = new ItemStack(playerBuyMaterial, quantity);
             }
             else if (args.length == 2)
             {
-                materialString = args[0];
-                playerBuyMaterial = matchMaterial(materialString);
+                if (args[0].equals("hand") || args[0].equals("this"))
+                {
+                    items = player.getInventory().getItemInMainHand();
+                    playerBuyMaterial = items.getType();
+                    materialString = playerBuyMaterial.toString().toLowerCase();
+                }
+                else
+                {
+                    materialString = args[0];
+                    playerBuyMaterial = matchMaterial(materialString);
+                }
                 if (playerBuyMaterial == null)
                 {
-                    player.sendMessage("\""+ args[0] + "\"" + " is not a valid item.");
+                    player.sendMessage("§4\""+ args[0] + "\"" + " is not a valid item.");
                     return false;
                 }
                 if (args[1].equals("all"))
@@ -329,27 +358,22 @@ public final class BuyAndSell extends JavaPlugin {
                 {
                     if (args[1].length() > 8)
                     {
-                        player.sendMessage("You are trying to buy too many items.");
+                        player.sendMessage("§4Error: You are trying to sell too many items.");
                         return false;
                     }
                     if (Double.parseDouble(args[1]) > 2304)
                     {
-                        player.sendMessage("You are trying to buy too many items.");
+                        player.sendMessage("§4Error: You are trying to sell too many items.");
                         return false;
                     }
                     if (args[0].length() > 100)
                     {
-                        player.sendMessage("Invalid item.");
+                        player.sendMessage("§4Error: Invalid item.");
                         return false;
                     }
-                    if (playerBuyMaterial == null)
-                    {
-                        player.sendMessage("\""+ args[0] + "\"" + " is not a valid item.");
-                        return false;
-                    }
-                    else if(!playerBuyMaterial.isItem()) {
-                        player.sendMessage("You cannot purchase " + "\""+ args[0] + "\"" + ".");
-                        return false;
+                    if(!playerBuyMaterial.isItem()) {
+                        player.sendMessage("§4You cannot sell " + "\""+ args[0] + "\"" + ".");
+                        return true;
                     }
                     quantity = Integer.parseInt(args[1]);
                 }
@@ -363,9 +387,9 @@ public final class BuyAndSell extends JavaPlugin {
 
             if (itemPrices.isEmpty())
             {
-                System.out.println("Price list is empty!");
-                player.sendMessage("This plugin has been configured incorrectly. Please contact a server administrator.");
-                return false;
+                System.out.println("§4[BuyAndSell] Error: Price list is empty!");
+                player.sendMessage("§4Error: This plugin has been configured incorrectly. Please contact a server administrator.");
+                return true;
             }
             else
             {
@@ -378,17 +402,16 @@ public final class BuyAndSell extends JavaPlugin {
                     }
                     else
                     {
-                        System.out.println("Item has no price.");
-                        player.sendMessage("This item does not have a price associated with it.");
-                        return false;
+                        player.sendMessage("§4You cannot sell this item.");
+                        return true;
                     }
                     player.getInventory().removeItem(items);
                     econ.depositPlayer(offlinePlayer, itemPrice * quantity);
-                    player.sendMessage("You just sold " + quantity + " " + materialString + " for $" + (itemPrice * quantity) + ".");
+                    player.sendMessage("§aYou just sold " + quantity + " " + materialString + " for $" + (itemPrice * quantity) + ".");
                 }
                 else
                 {
-                    player.sendMessage("You don't have enough items to sell.");
+                    player.sendMessage("§4You don't have enough items of that type to sell.");
                 }
                 return true;
             }
@@ -409,19 +432,19 @@ public final class BuyAndSell extends JavaPlugin {
 
                 if (args[0].length() > 100)
                 {
-                    player.sendMessage("Invalid item.");
+                    player.sendMessage("§4Error: Invalid item.");
                     return false;
                 }
                 else if (args[1].length() > 8)
                 {
-                    player.sendMessage("That price is too expensive.");
+                    player.sendMessage("§4Error: That price is too expensive.");
                     return false;
                 }
                 if (isNumeric(args[1]))
                 {
                     if (Double.parseDouble(args[1]) > 10000000)
                     {
-                        player.sendMessage("That price is too expensive.");
+                        player.sendMessage("§4Error: That price is too expensive.");
                         return false;
                     }
                 }
@@ -430,7 +453,7 @@ public final class BuyAndSell extends JavaPlugin {
                     return false;
                 }
                 if (playerBuyMaterial == null) {
-                    player.sendMessage("\""+ args[0] + "\"" + " is not a valid item.");
+                    player.sendMessage("§4Error: \""+ args[0] + "\"" + " is not a valid item.");
                     return false;
                 }
 
@@ -474,7 +497,7 @@ public final class BuyAndSell extends JavaPlugin {
             }
             itemPrices.put(materialString, pricePair);
 
-            player.sendMessage("Successfully set the price of " + materialString + " to $" + price + ".");
+            player.sendMessage("§aSuccessfully set the price of " + materialString + " to $" + price + ".");
             return true;
         }
         else if (command.getName().equals("setsellprice"))
@@ -492,19 +515,19 @@ public final class BuyAndSell extends JavaPlugin {
 
                 if (args[0].length() > 100)
                 {
-                    player.sendMessage("Invalid item.");
+                    player.sendMessage("§4Error: Invalid item.");
                     return false;
                 }
                 else if (args[1].length() > 8)
                 {
-                    player.sendMessage("That price is too expensive.");
+                    player.sendMessage("§4Error: That price is too expensive.");
                     return false;
                 }
                 if (isNumeric(args[1]))
                 {
                     if (Double.parseDouble(args[1]) > 10000000)
                     {
-                        player.sendMessage("That price is too expensive.");
+                        player.sendMessage("§4Error: That price is too expensive.");
                         return false;
                     }
                 }
@@ -513,7 +536,7 @@ public final class BuyAndSell extends JavaPlugin {
                     return false;
                 }
                 if (playerBuyMaterial == null) {
-                    player.sendMessage("\""+ args[0] + "\"" + " is not a valid item.");
+                    player.sendMessage("§4Error: \""+ args[0] + "\"" + " is not a valid item.");
                     return false;
                 }
                 price = Double.parseDouble(args[1]);
@@ -556,7 +579,7 @@ public final class BuyAndSell extends JavaPlugin {
             }
             itemPrices.put(materialString, pricePair);
 
-            player.sendMessage("Successfully set the price of " + materialString + " to $" + price + ".");
+            player.sendMessage("§aSuccessfully set the price of " + materialString + " to $" + price + ".");
             return true;
         }
 
@@ -582,12 +605,12 @@ public final class BuyAndSell extends JavaPlugin {
             }
             else if (args[0].length() > 100)
             {
-                player.sendMessage("Invalid item.");
+                player.sendMessage("§4Error: Invalid item.");
                 return false;
             }
             else if (playerBuyMaterial == null)
             {
-                player.sendMessage("\""+ args[0] + "\"" + " is not a valid item.");
+                player.sendMessage("§4Error: \""+ args[0] + "\"" + " is not a valid item.");
                 return false;
             }
             else
@@ -595,12 +618,12 @@ public final class BuyAndSell extends JavaPlugin {
                 if (itemPrices.containsKey(args[0]))
                 {
                     pairPrice = (Pair) itemPrices.get(args[0]);
-                    player.sendMessage(args[0] + " costs $" + pairPrice.getBuyPrice() + " to buy and pays $" + pairPrice.getSellPrice() + " when sold.");
+                    player.sendMessage("§a" + args[0] + " costs $" + pairPrice.getBuyPrice() + " to buy and pays $" + pairPrice.getSellPrice() + " when sold.");
                     return true;
                 }
                 else
                 {
-                    player.sendMessage("You cannot buy that item.");
+                    player.sendMessage("§4You cannot buy that item.");
                 }
             }
             return false;
