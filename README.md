@@ -6,8 +6,11 @@ Minecraft server plugin that lets users buy and sell items.
 - /buy item quantity
   - Purchases item(s) of the specified type and quantity.
   
-- /sell (item|hand) (quantity|all)
+- /sell item|hand|this (quantity|all)
   - Sells item(s) of the specified type (or hand item if not specified) and quantity.
+
+- /sell all
+  - Sells all sellable items in a player's inventory.
 
 - /price item
   - Retrieves the price of the specified item.
