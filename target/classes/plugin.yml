@@ -30,3 +30,8 @@ commands:
     description: Checks the price of an item.
     usage: /<command> item
     permission: BuyAndSell.checkPrices
+
+  pricelist:
+    aliases: priceslist
+    usage: /<command> page#
+    permission: BuyAndSell.viewPriceList

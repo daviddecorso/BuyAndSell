@@ -1,3 +1,13 @@
+/********************************************
+             BUYANDSELL PLUGIN:
+
+ This plugin lets users buy and sell items.
+      (More information in the readme)
+
+ Copyright (C) 2020 - David DeCorso
+ This plugin is free to use and distribute.
+ *******************************************/
+
 package me.davidfire1332.buyandsell;
 
 import net.milkbowl.vault.economy.Economy;
@@ -629,8 +639,64 @@ public final class BuyAndSell extends JavaPlugin {
             return false;
         }
 
+        else if (command.getName().equals("pricelist") || command.getName().equals("priceslist"))
+        {
+            int page, i, priceListSize, lineCount = 0, totalPages;
+
+            int lineLength = 8;
+
+            if (args.length > 1)
+            {
+                return false;
+            }
+            if (args.length == 0)
+            {
+                page = 1;
+            }
+            else
+            {
+                if (args[0].length() > 100000||!isNumeric(args[0]))
+                {
+                    return false;
+                }
+                page = Integer.parseInt(args[0]);
+            }
+            Player player = (Player) sender;
+            priceListSize = pricesToWrite.size();
+            totalPages = priceListSize / 9;
+
+            if (page > totalPages + 1)
+            {
+                return true;
+            }
+
+            pricesToWrite.sort(Comparator.comparing(String::toString));
+
+            player.sendMessage("§b---- §aPRICE LIST §b----- §aPage §c" + page + "§a/§c" + (totalPages + 1) + "§b----");
+            player.sendMessage("§b---- §aItem §b| §aBuy Price §b| §aSell Price §b----");
+            for (i = (page - 1) * lineLength; i < priceListSize; i++)
+            {
+                player.sendMessage("§a" + pricesToWrite.get(i).replace(" ", " $"));
+                lineCount++;
+                if (lineCount > lineLength)
+                {
+                    break;
+                }
+            }
+            if (i < pricesToWrite.size())
+            {
+                if (page <= totalPages)
+                {
+                    player.sendMessage("§aType §c/" + command.getName() + " " + (page + 1) + "§a to read the next page.");
+                }
+
+            }
+            return true;
+        }
+
         return false;
     }
+
 }
 
 class Pair<K, V> {

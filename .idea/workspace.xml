@@ -2,14 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="488176d3-86a8-4a74-a729-232b38ff677e" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_destroystokyo_paper_paper_api_1_15_2_R0_1_SNAPSHOT.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_destroystokyo_paper_paper_api_1_15_2_R0_1_SNAPSHOT.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/me/davidfire1332/buyandsell/BuyAndSell.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/davidfire1332/buyandsell/BuyAndSell.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/plugin.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/BuyAndSell-1.0.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/BuyAndSell-1.0.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/me/davidfire1332/buyandsell/BuyAndSell.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/davidfire1332/buyandsell/BuyAndSell.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/me/davidfire1332/buyandsell/Pair.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/davidfire1332/buyandsell/Pair.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/plugin.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/original-BuyAndSell-1.0.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/original-BuyAndSell-1.0.jar" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
