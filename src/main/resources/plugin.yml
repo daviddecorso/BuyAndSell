@@ -1,0 +1,32 @@
+name: BuyAndSell
+version: ${project.version}
+main: me.davidfire1332.buyandsell.BuyAndSell
+api-version: 1.13
+authors: [davidfire1332]
+description: Enables users to buy and sell ingame items.
+depend: [Vault]
+commands:
+  buy:
+    description: Buys an item.
+    usage: /<command> item amount
+    permission: BuyAndSell.buyItems
+
+  setsellprice:
+    description: Sets the sell price of an item.
+    usage: /<command> item price
+    permission: BuyAndSell.setPrices
+
+  setbuyprice:
+    description: Sets the buy price of an item.
+    usage: /<command> item price
+    permission: BuyAndSell.setPrices
+
+  sell:
+    description: Sells an item.
+    usage: /<command> item amount
+    permission: BuyAndSell.sellItems
+
+  price:
+    description: Checks the price of an item.
+    usage: /<command> item
+    permission: BuyAndSell.checkPrices
