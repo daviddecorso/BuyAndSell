@@ -489,22 +489,25 @@ public final class BuyAndSell extends JavaPlugin {
             }
             else
             {
+                if (!itemPrices.containsKey(materialString))
+                {
+                    pricesToWrite.add(materialString + " " + pricePair.getBuyPrice() + " " + pricePair.getSellPrice());
+                }
+                else
+                {
+                    Pair tempPair = (Pair) itemPrices.get(materialString);
+                    String tempString = materialString + " " + 0.0 + " " + tempPair.getSellPrice();
+                    pricesToWrite.remove(tempString);
+                    tempString = materialString + " " + tempPair.getBuyPrice() + " " + 0.0;
+                    pricesToWrite.remove(tempString);
+                    tempString = materialString + " " + tempPair.getBuyPrice() + " " + tempPair.getSellPrice();
+                    pricesToWrite.remove(tempString);
+                }
                 pricePair.setBuyPrice(price);
             }
 
-            if (!itemPrices.containsKey(materialString))
-            {
-                pricesToWrite.add(materialString + " " + pricePair.getBuyPrice() + " " + pricePair.getSellPrice());
-            }
-            else
-            {
-                Pair tempPair = (Pair) itemPrices.get(materialString);
-                String tempString = materialString + " " + 0.0 + " " + tempPair.getSellPrice();
-                pricesToWrite.remove(tempString);
-                tempString = materialString + " " + tempPair.getBuyPrice() + " " + 0.0;
-                pricesToWrite.remove(tempString);
-                pricesToWrite.add(materialString + " " + pricePair.getBuyPrice() + " " + pricePair.getSellPrice());
-            }
+
+            pricesToWrite.add(materialString + " " + pricePair.getBuyPrice() + " " + pricePair.getSellPrice());
             itemPrices.put(materialString, pricePair);
 
             player.sendMessage("§aSuccessfully set the price of " + materialString + " to $" + price + ".");
@@ -571,22 +574,24 @@ public final class BuyAndSell extends JavaPlugin {
             }
             else
             {
+                if (!itemPrices.containsKey(materialString))
+                {
+                    pricesToWrite.add(materialString + " " + pricePair.getBuyPrice() + " " + pricePair.getSellPrice());
+                }
+                else
+                {
+                    Pair tempPair = (Pair) itemPrices.get(materialString);
+                    String tempString = materialString + " " + tempPair.getBuyPrice() + " " + 0.0;
+                    pricesToWrite.remove(tempString);
+                    tempString = materialString + " " + 0.0 + " " + tempPair.getSellPrice();
+                    pricesToWrite.remove(tempString);
+                    tempString = materialString + " " + tempPair.getBuyPrice() + " " + tempPair.getSellPrice();
+                    pricesToWrite.remove(tempString);
+                }
                 pricePair.setSellPrice(price);
             }
 
-            if (!itemPrices.containsKey(materialString))
-            {
-                pricesToWrite.add(materialString + " " + pricePair.getBuyPrice() + " " + pricePair.getSellPrice());
-            }
-            else
-            {
-                Pair tempPair = (Pair) itemPrices.get(materialString);
-                String tempString = materialString + " " + tempPair.getBuyPrice() + " " + 0.0;
-                pricesToWrite.remove(tempString);
-                tempString = materialString + " " + 0.0 + " " + tempPair.getSellPrice();
-                pricesToWrite.remove(tempString);
-                pricesToWrite.add(materialString + " " + pricePair.getBuyPrice() + " " + pricePair.getSellPrice());
-            }
+            pricesToWrite.add(materialString + " " + pricePair.getBuyPrice() + " " + pricePair.getSellPrice());
             itemPrices.put(materialString, pricePair);
 
             player.sendMessage("§aSuccessfully set the price of " + materialString + " to $" + price + ".");
@@ -600,43 +605,47 @@ public final class BuyAndSell extends JavaPlugin {
             Player player = (Player) sender;
             String materialString;
             Pair pairPrice;
-            if (args != null && args.length > 0 &&!args[0].equals(""))
+            ItemStack items;
+
+            if (args != null && args.length == 2 && !args[0].equals(""))
             {
+                if (args[0].length() > 100)
+                {
+                    player.sendMessage("§4Error: Invalid item.");
+                    return false;
+                }
+
                 materialString = args[0];
                 playerBuyMaterial = matchMaterial(materialString);
+
+                if (playerBuyMaterial == null)
+                {
+                    player.sendMessage("§4Error: \""+ args[0] + "\"" + " is not a valid item.");
+                    return false;
+                }
+                materialString = playerBuyMaterial.toString().toLowerCase();
+            }
+            else if (args.length == 0) {
+                items = player.getInventory().getItemInMainHand();
+                playerBuyMaterial = items.getType();
+                materialString = playerBuyMaterial.toString().toLowerCase();
             }
             else
             {
                 return false;
             }
 
-            if (args.length != 1) {
-                return false;
-            }
-            else if (args[0].length() > 100)
+            if (itemPrices.containsKey(materialString))
             {
-                player.sendMessage("§4Error: Invalid item.");
-                return false;
-            }
-            else if (playerBuyMaterial == null)
-            {
-                player.sendMessage("§4Error: \""+ args[0] + "\"" + " is not a valid item.");
-                return false;
+                pairPrice = (Pair) itemPrices.get(materialString);
+                player.sendMessage("§a" + materialString + " costs $" + pairPrice.getBuyPrice() + " to buy and pays $" + pairPrice.getSellPrice() + " when sold.");
+                return true;
             }
             else
             {
-                if (itemPrices.containsKey(args[0]))
-                {
-                    pairPrice = (Pair) itemPrices.get(args[0]);
-                    player.sendMessage("§a" + args[0] + " costs $" + pairPrice.getBuyPrice() + " to buy and pays $" + pairPrice.getSellPrice() + " when sold.");
-                    return true;
-                }
-                else
-                {
-                    player.sendMessage("§4You cannot buy that item.");
-                }
+                player.sendMessage("§4You cannot buy that item.");
+                return true;
             }
-            return false;
         }
 
         else if (command.getName().equals("pricelist") || command.getName().equals("priceslist"))
