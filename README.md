@@ -17,6 +17,9 @@ Minecraft server plugin that lets users buy and sell items.
   
 - /pricelist (page #)
   - Prints a list of buyable/sellable items and their prices.
+  
+- /setprice (item|hand) buyprice sellprice
+  - Sets the buy and sell prices of the specified item to the specified price.
 
 - /setbuyprice (item|hand) price
   - Sets the price to buy the specified item to the specified price.
@@ -60,7 +63,7 @@ Works with any economy plugins supported by Vault.
   
 ## To-do:
 
-- [ ] Make a command that sets the sell and buy prices simultaneously: /setprices sellprice buyprice
+- [x] Make a command that sets the sell and buy prices simultaneously: /setprices sellprice buyprice
 
 - [x] Make a command that prints a list of buyable items
 
