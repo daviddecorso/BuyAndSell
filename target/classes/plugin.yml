@@ -11,6 +11,12 @@ commands:
     usage: /<command> item amount
     permission: BuyAndSell.buyItems
 
+  setprice:
+    aliases: setprices
+    description: Sets the buy and sell prices of an item.
+    usage: /<command> item buyprice sellprice
+    permission: BuyAndSell.setPrices
+
   setsellprice:
     description: Sets the sell price of an item.
     usage: /<command> item price

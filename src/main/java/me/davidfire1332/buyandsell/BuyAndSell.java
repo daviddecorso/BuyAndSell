@@ -427,6 +427,91 @@ public final class BuyAndSell extends JavaPlugin {
             }
         }
 
+        else if (command.getName().equals("setprice"))
+        {
+            String materialString;
+            Material playerBuyMaterial;
+            Player player = (Player) sender;
+            ItemStack items;
+            double buyPrice, sellPrice;
+
+            if (args == null || args.length > 3 || args.length < 2)
+            {
+                return false;
+            }
+            else if (args.length == 2)
+            {
+                items = player.getInventory().getItemInMainHand();
+                playerBuyMaterial = items.getType();
+                materialString = playerBuyMaterial.toString().toLowerCase();
+
+                if (!isNumeric(args[0]) || !isNumeric(args[1]))
+                {
+                    return false;
+                }
+
+                if (args[0].length() > 10 || args[1].length() > 10)
+                {
+                    player.sendMessage("§4Error: That price is too expensive.");
+                    return false;
+                }
+
+                buyPrice = Double.parseDouble(args[0]);
+                sellPrice = Double.parseDouble(args[1]);
+            }
+            else // args.length == 3
+            {
+                materialString = args[0];
+                playerBuyMaterial = matchMaterial(materialString);
+                materialString = playerBuyMaterial.toString().toLowerCase();
+                if (args[0].length() > 100)
+                {
+                    player.sendMessage("§4Error: Invalid item.");
+                    return false;
+                }
+                else if (args[1].length() > 8)
+                {
+                    player.sendMessage("§4Error: That price is too expensive.");
+                    return false;
+                }
+
+                buyPrice = Double.parseDouble(args[1]);
+                sellPrice = Double.parseDouble(args[2]);
+            }
+
+            Pair pricePair = (Pair) itemPrices.get(materialString);
+
+            if (pricePair == null)
+            {
+                pricePair = new Pair(buyPrice, sellPrice);
+            }
+            else
+            {
+                if (!itemPrices.containsKey(materialString))
+                {
+                    pricesToWrite.add(materialString + " " + pricePair.getBuyPrice() + " " + pricePair.getSellPrice());
+                }
+                else
+                {
+                    Pair tempPair = (Pair) itemPrices.get(materialString);
+                    String tempString = materialString + " " + 0.0 + " " + tempPair.getSellPrice();
+                    pricesToWrite.remove(tempString);
+                    tempString = materialString + " " + tempPair.getBuyPrice() + " " + 0.0;
+                    pricesToWrite.remove(tempString);
+                    tempString = materialString + " " + tempPair.getBuyPrice() + " " + tempPair.getSellPrice();
+                    pricesToWrite.remove(tempString);
+                }
+                pricePair.setPrices(buyPrice, sellPrice);
+            }
+
+            pricesToWrite.add(materialString + " " + pricePair.getBuyPrice() + " " + pricePair.getSellPrice());
+            itemPrices.put(materialString, pricePair);
+
+            player.sendMessage("§aSuccessfully set the buy price of " + materialString + " to $" + buyPrice + ", and the sell price to $" + sellPrice + ".");
+            return true;
+
+        }
+
         else if (command.getName().equals("setbuyprice"))
         {
             String materialString;
@@ -435,7 +520,7 @@ public final class BuyAndSell extends JavaPlugin {
             ItemStack items;
             double price;
 
-            if (args != null && args.length == 2 &&!args[0].equals(""))
+            if (args != null && args.length == 2 && !args[0].equals(""))
             {
                 materialString = args[0];
                 playerBuyMaterial = matchMaterial(materialString);
@@ -732,6 +817,12 @@ class Pair<K, V> {
     public void setBuyPrice(K buyPrice)
     {
         this.buyPrice = buyPrice;
+    }
+
+    public void setPrices(K buyPrice, V sellPrice)
+    {
+        this.buyPrice = buyPrice;
+        this.sellPrice = sellPrice;
     }
 
     public K getBuyPrice()
