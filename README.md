@@ -21,6 +21,9 @@ Minecraft server plugin that lets users buy and sell items.
 - /setprice (item|hand) buyprice sellprice
   - Sets the buy and sell prices of the specified item to the specified price.
 
+- removeprice (item|hand)
+  - Removes the specified price from the pricelist.
+
 - /setbuyprice (item|hand) price
   - Sets the price to buy the specified item to the specified price.
   
@@ -31,7 +34,7 @@ Minecraft server plugin that lets users buy and sell items.
 
 ## Installing:
 
-Simply drag and drop the [BuyAndSell .jar file](https://github.com/daviddecorso/BuyAndSell/blob/master/target/BuyAndSell-1.0.jar) into your server's plugin folder.
+Simply drag and drop the [BuyAndSell.jar file](https://github.com/daviddecorso/BuyAndSell/blob/master/target/BuyAndSell-1.0.jar) into your server's plugin folder.
 
 The plugin will create a new directory and prices file to store item prices. You can start adding prices via the /setbuyprice and /setsellprice commands, or directly into the prices.txt file with the format (Item) (Buy price) (Sell price).
 
@@ -62,6 +65,8 @@ Works with any economy plugins supported by Vault.
   - Determins if a player can sell items.
   
 ## To-do:
+
+- [x] Add /remove command
 
 - [x] Make a command that sets the sell and buy prices simultaneously: /setprices sellprice buyprice
 
