@@ -27,6 +27,12 @@ commands:
     usage: /<command> item price
     permission: BuyAndSell.setPrices
 
+  removeprice:
+    aliases: removeprices
+    description: Removes a price from the price list.
+    usage: /<command> item
+    permission: BuyAndSell.setPrices
+
   sell:
     description: Sells an item.
     usage: /<command> item amount

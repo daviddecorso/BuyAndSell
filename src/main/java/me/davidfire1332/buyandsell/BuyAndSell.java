@@ -11,7 +11,6 @@
 package me.davidfire1332.buyandsell;
 
 import net.milkbowl.vault.economy.Economy;
-import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -21,7 +20,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.inventory.PlayerInventory;
 
 import java.io.*;
 import java.util.*;
@@ -56,18 +54,21 @@ public final class BuyAndSell extends JavaPlugin {
     @Override
     public void onEnable() {
         // Plugin startup logic
-
         String itemFromPriceFile, tempString;
+
+        // Loads economy
         if (!setupEconomy() ) {
             log.severe(String.format("§4Error: [%s] - Disabled due to no Vault dependency found!", getDescription().getName()));
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
-        pricesList = new File("plugins\\buyAndSell\\prices.txt");
+
+        // loads the prices file or creates one if it doesn't exist.
+        pricesList = new File("plugins/buyAndSell/prices.txt");
 
         if (!pricesList.isFile())
         {
-            new File("plugins\\buyAndSell").mkdirs();
+            new File("plugins/buyAndSell").mkdirs();
             try {
                 pricesList.createNewFile();
             } catch (IOException e) {
@@ -84,6 +85,8 @@ public final class BuyAndSell extends JavaPlugin {
             e.printStackTrace();
         }
 
+        // Reads the prices file into a hash map storing the items and prices.
+        // Buy and sell prices are stored as a pair and that pair is associated with the item name.
         if (s == null)
         {
             System.out.println("§4Error: unable to find file for price list. File must be named prices.txt.");
@@ -139,6 +142,7 @@ public final class BuyAndSell extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        // On shutdown all of the prices are sorted and written to a file.
         pricesList = new File("plugins\\buyAndSell\\prices.txt");
         FileWriter fw = null;
         BufferedWriter bw = null;
@@ -459,7 +463,7 @@ public final class BuyAndSell extends JavaPlugin {
                 buyPrice = Double.parseDouble(args[0]);
                 sellPrice = Double.parseDouble(args[1]);
             }
-            else // args.length == 3
+            else
             {
                 materialString = args[0];
                 playerBuyMaterial = matchMaterial(materialString);
@@ -683,7 +687,6 @@ public final class BuyAndSell extends JavaPlugin {
             return true;
         }
 
-
         else if (command.getName().equals("price"))
         {
             Material playerBuyMaterial;
@@ -692,7 +695,7 @@ public final class BuyAndSell extends JavaPlugin {
             Pair pairPrice;
             ItemStack items;
 
-            if (args != null && args.length == 2 && !args[0].equals(""))
+            if (args != null && args.length == 1 && !args[0].equals(""))
             {
                 if (args[0].length() > 100)
                 {
@@ -729,6 +732,59 @@ public final class BuyAndSell extends JavaPlugin {
             else
             {
                 player.sendMessage("§4You cannot buy that item.");
+                return true;
+            }
+        }
+
+        else if (command.getName().equals("removeprice") || command.getName().equals("removeprices"))
+        {
+            Material playerBuyMaterial;
+            Player player = (Player) sender;
+            String materialString;
+            Pair pairPrice;
+            ItemStack items;
+            String writeString;
+
+            if (args != null && args.length == 1 && !args[0].equals(""))
+            {
+                if (args[0].length() > 100)
+                {
+                    player.sendMessage("§4Error: Invalid item.");
+                    return false;
+                }
+
+                materialString = args[0];
+                playerBuyMaterial = matchMaterial(materialString);
+
+                if (playerBuyMaterial == null)
+                {
+                    player.sendMessage("§4Error: \""+ args[0] + "\"" + " is not a valid item.");
+                    return false;
+                }
+                materialString = playerBuyMaterial.toString().toLowerCase();
+            }
+            else if (args.length == 0) {
+                items = player.getInventory().getItemInMainHand();
+                playerBuyMaterial = items.getType();
+                materialString = playerBuyMaterial.toString().toLowerCase();
+            }
+            else
+            {
+                return false;
+            }
+
+            if (itemPrices.containsKey(materialString))
+            {
+                pairPrice = (Pair) itemPrices.get(materialString);
+                writeString = materialString + " " + pairPrice.getBuyPrice() + " " + pairPrice.getSellPrice();
+                pricesToWrite.remove(writeString);
+                itemPrices.remove(materialString);
+                player.sendMessage("§a" + materialString + " has been removed from the price list.");
+                return true;
+            }
+            else
+            {
+                player.sendMessage("§4Item not in price list.");
                 return true;
             }
         }
@@ -790,7 +846,6 @@ public final class BuyAndSell extends JavaPlugin {
 
         return false;
     }
-
 }
 
 class Pair<K, V> {

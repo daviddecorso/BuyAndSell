@@ -1,5 +1,5 @@
 name: BuyAndSell
-version: 1.0
+version: 1.1
 main: me.davidfire1332.buyandsell.BuyAndSell
 api-version: 1.13
 authors: [davidfire1332]
@@ -25,6 +25,12 @@ commands:
   setbuyprice:
     description: Sets the buy price of an item.
     usage: /<command> item price
+    permission: BuyAndSell.setPrices
+
+  removeprice:
+    aliases: removeprices
+    description: Removes a price from the price list.
+    usage: /<command> item
     permission: BuyAndSell.setPrices
 
   sell:
