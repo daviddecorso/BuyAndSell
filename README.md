@@ -21,7 +21,7 @@ Minecraft server plugin that lets users buy and sell items.
 - /setprice (item|hand) buyprice sellprice
   - Sets the buy and sell prices of the specified item to the specified price.
 
-- removeprice (item|hand)
+- /removeprice (item|hand)
   - Removes the specified price from the pricelist.
 
 - /setbuyprice (item|hand) price
