@@ -34,7 +34,7 @@ Minecraft server plugin that lets users buy and sell items.
 
 ## Installing:
 
-Simply drag and drop the [BuyAndSell.jar file](https://github.com/daviddecorso/BuyAndSell/blob/master/target/BuyAndSell-1.0.jar) into your server's plugin folder.
+Simply drag and drop the [BuyAndSell.jar file](https://github.com/daviddecorso/BuyAndSell/blob/master/target/BuyAndSell-1.1.jar) into your server's plugin folder.
 
 The plugin will create a new directory and prices file to store item prices. You can start adding prices via the /setbuyprice and /setsellprice commands, or directly into the prices.txt file with the format (Item) (Buy price) (Sell price).
 
